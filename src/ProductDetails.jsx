@@ -21,10 +21,41 @@ const ProductDetails = ({ product }) => {
   const availableOffers = Array.isArray(productData.availableOffers) ? productData.availableOffers : [];
   const reviews = productData.reviews || 'No reviews yet';
 
+  const convertToCSV = () => {
+    const header = ['Title', 'Price', 'Original Price', 'Rating', 'Reviews', 'Seller Name', 'Delivery Info', 'Available Offers'];
+    const rows = [
+      [
+        productData.title,
+        cleanPrice,
+        productData.originalPrice || 'N/A',
+        productData.rating || 'N/A',
+        reviews,
+        productData.sellerName,
+        productData.deliveryInfo,
+        availableOffers.join('; ') || 'No offers'
+      ]
+    ];
+
+    let csvContent = "data:text/csv;charset=utf-8,";
+
+    csvContent += header.join(',') + "\r\n";
+
+    rows.forEach(row => {
+      csvContent += row.join(',') + "\r\n";
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `${productData.title}_details.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden">
       <div className="md:flex">
-        {/* Product Image */}
         <div className="md:w-1/2 p-6 flex items-center justify-center bg-gray-50">
           <img 
             src={productData.imageUrl} 
@@ -33,7 +64,6 @@ const ProductDetails = ({ product }) => {
           />
         </div>
 
-        {/* Product Details */}
         <div className="md:w-1/2 p-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">{productData.title}</h2>
           
@@ -73,8 +103,14 @@ const ProductDetails = ({ product }) => {
             </div>
           )}
 
-          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200">
+          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 mb-4">
             View on Store
+          </button>
+
+          <button 
+            onClick={convertToCSV} 
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200">
+            Download Product Details as CSV
           </button>
         </div>
       </div>
