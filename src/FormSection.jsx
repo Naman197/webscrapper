@@ -16,7 +16,7 @@ const FormSection = ({ setProduct }) => {
     setError(null);
     
     try {
-      const response = await fetch('http://localhost:3000/scrape', {
+      const response = await fetch('https://scrapper-backend-e9rr.onrender.com/scrape', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
