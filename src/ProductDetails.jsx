@@ -14,7 +14,8 @@ const ProductDetails = ({ product }) => {
     );
   }
 
-  const cleanPrice = productData?.price
+  // Extract clean price from messy price string
+  const cleanPrice = productData.price
     ? productData.price.match(/₹\d{1,3}(?:,\d{3})*(?:\.\d{2})?/)?.[0] || 'Price not available'
     : 'Price not available';
 
@@ -22,12 +23,12 @@ const ProductDetails = ({ product }) => {
   const reviews = productData.reviews || 'No reviews yet';
 
   const convertToCSV = () => {
-    const header = ['Title', 'Price', 'Original Price', 'Rating', 'Reviews', 'Seller Name', 'Delivery Info', 'Available Offers'];
+    const header = ['Title', 'Price', 'Rating', 'Reviews', 'Seller Name', 'Delivery Info', 'Available Offers'];
+
     const rows = [
       [
         productData.title,
         cleanPrice,
-        productData.originalPrice || 'N/A',
         productData.rating || 'N/A',
         reviews,
         productData.sellerName,
@@ -36,18 +37,23 @@ const ProductDetails = ({ product }) => {
       ]
     ];
 
-    let csvContent = "data:text/csv;charset=utf-8,";
+    const escapeCSV = (value) => `"${(value || '').toString().replace(/"/g, '""')}"`;
 
-    csvContent += header.join(',') + "\r\n";
-
+    let csvContent = '\uFEFF'; // UTF-8 BOM for Excel
+    csvContent += header.map(escapeCSV).join(',') + "\r\n";
     rows.forEach(row => {
-      csvContent += row.join(',') + "\r\n";
+      csvContent += row.map(escapeCSV).join(',') + "\r\n";
     });
 
-    const encodedUri = encodeURI(csvContent);
+    const fileName = productData.title
+      .replace(/[^\w\s]/gi, '') // Remove special characters
+      .replace(/\s+/g, '_')      // Replace spaces with _
+      .slice(0, 50);             // Limit length
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `${productData.title}_details.csv`);
+    link.setAttribute('href', URL.createObjectURL(blob));
+    link.setAttribute('download', `${fileName}_details.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -76,11 +82,6 @@ const ProductDetails = ({ product }) => {
 
           <div className="mb-6">
             <span className="text-3xl font-bold text-gray-900">{cleanPrice}</span>
-            {productData.originalPrice && (
-              <span className="ml-2 text-lg text-gray-500 line-through">
-                {productData.originalPrice}
-              </span>
-            )}
           </div>
 
           <div className="mb-6">
