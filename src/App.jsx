@@ -5,6 +5,7 @@ import FormSection from './FormSection';
 import ProductDetails from './ProductDetails';
 import PriceComparison from './PriceComparison';
 import About from './About';
+import Productlist from './productlist';
 
 const App = () => {
   const [product, setProduct] = useState(null);
@@ -51,6 +52,8 @@ const App = () => {
           
           <Route path="/comparison" element={<PriceComparison />} />
           <Route path="/about" element={<About />} />
+          <Route path="/products" element={<Productlist/>} />
+
         </Routes>
         
         <footer className="bg-white border-t border-gray-200 py-8 mt-12">

@@ -24,6 +24,12 @@ const Navbar = () => {
                 Comparison
               </Link>
               <Link
+                to="/products"
+                className="text-black hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              >
+                Products
+              </Link>
+              <Link
                 to="/about"
                 className="text-black hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
               >
